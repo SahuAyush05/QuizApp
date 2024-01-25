@@ -1,28 +1,41 @@
-import React, { useState } from "react";
-import Question from "../question.js";
-const Quiz = () => {
-  const [userAnswer, setUserAnswer] = useState([]);
-  const handleSelectAnswer = (selectedAnswer) => {
-    setUserAnswer((prevUserAnswer) => {
-      return [...prevUserAnswer, selectedAnswer];
+import { useState, useCallback } from 'react';
+
+import QUESTIONS from '../question.js';
+import Question from './Question.jsx';
+import Summary from './Summary.jsx';
+
+export default function Quiz() {
+  const [userAnswers, setUserAnswers] = useState([]);
+
+  const activeQuestionIndex = userAnswers.length;
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(
+    selectedAnswer
+  ) {
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
     });
-  };
-  const activeQuestionIndex = userAnswer.length;
+  },
+  []);
+
+  const handleSkipAnswer = useCallback(
+    () => handleSelectAnswer(null),
+    [handleSelectAnswer]
+  );
+
+  if (quizIsComplete) {
+    return <Summary userAnswers={userAnswers} />
+  }
+
   return (
     <div id="quiz">
-        <div id="question">
-      <h2>{Question[activeQuestionIndex].text}</h2>
-      <ul id="answers">
-        {Question[activeQuestionIndex].answers.map((answer) => (
-          <li key={answer} className="answer">
-            <button onClick={() => handleSelectAnswer(answer)}>{answer}</button>
-          </li>
-        ))}
-      </ul>
+      <Question
+        key={activeQuestionIndex}
+        index={activeQuestionIndex}
+        onSelectAnswer={handleSelectAnswer}
+        onSkipAnswer={handleSkipAnswer}
+      />
     </div>
-    </div>
-    
   );
-};
-
-export default Quiz;
+}

@@ -1,4 +1,4 @@
-import qi from "../assets/headerimg.png";
+import qi from "../assets/quiz-logo.png";
 
 export default function Header() {
   return (
